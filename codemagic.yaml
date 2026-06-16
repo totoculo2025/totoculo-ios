@@ -1,0 +1,39 @@
+workflows:
+  ios-workflow:
+    name: iOS Build
+
+    integrations:
+      app_store_connect: codemagic
+
+    environment:
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        provisioning_profiles:
+          - TOTOCULO_appstore_v2
+
+    scripts:
+      - name: Install CocoaPods
+        script: |
+          cd "Totoculo-FantaFutsal/src"
+          pod install
+
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "Totoculo-FantaFutsal/src/Totoculo - FantaFutsal.xcworkspace" \
+            --scheme "Totoculo - FantaFutsal"
+
+      - name: Upload IPA to App Store Connect
+        script: |
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
+          echo "Uploading IPA: $IPA_PATH"
+          app-store-connect publish --path "$IPA_PATH"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
