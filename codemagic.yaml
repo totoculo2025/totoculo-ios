@@ -15,18 +15,19 @@ workflows:
     scripts:
       - name: Install CocoaPods
         script: |
-          cd "Totoculo-FantaFutsal/src"
+          cd "src"
           pod install
 
       - name: Set up code signing
         script: |
+          cd "src"
           xcode-project use-profiles
 
       - name: Build IPA
         script: |
           xcode-project build-ipa \
-            --workspace "Totoculo-FantaFutsal/src/Totoculo - FantaFutsal.xcworkspace" \
-            --scheme "Totoculo - FantaFutsal"
+            --workspace "src/Totoculo-FantaFutsal.xcworkspace" \
+            --scheme "Totoculo-FantaFutsal"
 
       - name: Upload IPA to App Store Connect
         script: |
